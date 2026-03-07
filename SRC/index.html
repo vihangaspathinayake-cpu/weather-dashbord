@@ -3,37 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather Dashboard</title>
+    <title>Weather Dashboard - Free Version</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .header {
-            text-align: center;
-            color: white;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
+        .container { max-width: 1200px; margin: 0 auto; transition: filter 0.3s; }
+        .header { text-align: center; color: white; margin-bottom: 30px; }
+        
         .search-box {
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
@@ -43,300 +24,254 @@
             display: flex;
             gap: 10px;
         }
-
         .search-box input {
-            flex: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            background: rgba(255, 255, 255, 0.9);
+            flex: 1; padding: 15px; border: none; border-radius: 10px; font-size: 16px; outline: none;
         }
-
         .search-box button {
-            padding: 15px 30px;
-            border: none;
-            border-radius: 10px;
-            background: #667eea;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .search-box button:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
+            padding: 15px 30px; border: none; border-radius: 10px;
+            background: #667eea; color: white; cursor: pointer; transition: 0.3s;
+            font-weight: bold;
         }
 
         .main-weather {
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            padding: 40px;
-            margin-bottom: 30px;
-            color: white;
+            padding: 40px; margin-bottom: 30px; color: white;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
-
-        .location {
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-
-        .date {
-            font-size: 1.1em;
-            opacity: 0.8;
-            margin-bottom: 30px;
-        }
-
-        .weather-info {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 30px;
-        }
-
-        .temp-display {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .temperature {
-            font-size: 5em;
-            font-weight: 300;
-        }
-
-        .weather-icon {
-            font-size: 6em;
-        }
-
-        .weather-desc {
-            font-size: 1.5em;
-            text-transform: capitalize;
-        }
+        .location { font-size: 2.5em; font-weight: bold; }
+        .temperature { font-size: 5em; font-weight: 300; }
+        .weather-desc { font-size: 1.5em; text-transform: capitalize; opacity: 0.9; }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px; margin-bottom: 30px;
         }
-
         .stat-card {
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
             border-radius: 15px;
-            padding: 25px;
-            color: white;
-            transition: all 0.3s;
+            padding: 20px; color: white; text-align: center;
         }
 
-        .stat-card:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.2);
+    
+        #loader {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
         }
-
-        .stat-card h3 {
-            font-size: 0.9em;
-            opacity: 0.8;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .spinner {
+            width: 50px; height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s linear infinite;
         }
-
-        .stat-card .value {
-            font-size: 2em;
-            font-weight: 600;
-        }
-
-        .forecast {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            color: white;
-        }
-
-        .forecast h2 {
-            margin-bottom: 20px;
-        }
-
-        .forecast-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-        }
-
-        .forecast-card {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            transition: all 0.3s;
-        }
-
-        .forecast-card:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
-        }
-
-        .forecast-card .day {
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .forecast-card .icon {
-            font-size: 2.5em;
-            margin: 10px 0;
-        }
-
-        .forecast-card .temps {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .forecast-card .high {
-            font-weight: 600;
-        }
-
-        .forecast-card .low {
-            opacity: 0.7;
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .blur { filter: blur(5px); pointer-events: none; }
     </style>
 </head>
 <body>
-    <div class="container">
+
+    <div id="loader"><div class="spinner"></div></div>
+
+    <div class="container" id="mainContainer">
+
+        <div style="background: #111; border-radius: 12px; padding: 12px 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); width: fit-content; margin-bottom: 24px;">
+            <div style="display: flex; align-items: center; gap: 24px;">
+                <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="24" cy="24" r="12" fill="#FFC107"/>
+                    <g stroke="#FFC107" stroke-width="3">
+                        <line x1="24" y1="4" x2="24" y2="12" />
+                        <line x1="24" y1="36" x2="24" y2="44" />
+                        <line x1="4" y1="24" x2="12" y2="24" />
+                        <line x1="36" y1="24" x2="44" y2="24" />
+                        <line x1="10" y1="10" x2="16" y2="16" />
+                        <line x1="32" y1="32" x2="38" y2="38" />
+                        <line x1="10" y1="38" x2="16" y2="32" />
+                        <line x1="32" y1="16" x2="38" y2="10" />
+                    </g>
+                    <ellipse cx="40" cy="38" rx="14" ry="9" fill="#90CAF9"/>
+                    <ellipse cx="52" cy="38" rx="7" ry="5" fill="#BBDEFB"/>
+                    <ellipse cx="34" cy="44" rx="6" ry="4" fill="#E3F2FD"/>
+                </svg>
+                <span style="font-family: 'Segoe UI', Arial, sans-serif; font-size: 2rem; font-weight: 600; color: #2196F3;">Weather Dashboard</span>
+            </div>
+            <div style="margin-top: 8px; text-align: center;">
+                <span id="date" style="font-family: 'Segoe UI', Arial, sans-serif; font-size: 1.1rem; color: #fff; background: #222; border-radius: 6px; padding: 6px 16px; font-weight: 500; letter-spacing: 1px; display: inline-block;"></span>
+            </div>
+        </div>
         <div class="header">
-            <h1>Weather Dashboard</h1>
-            <p>Your Personal Weather Station</p>
+            
         </div>
 
         <div class="search-box">
-            <input type="text" placeholder="Enter city name..." id="cityInput">
+            <input type="text" placeholder="Enter city name..." id="cityInput" onkeydown="if(event.key === 'Enter') searchWeather()">
             <button onclick="searchWeather()">Search</button>
         </div>
 
         <div class="main-weather">
-            <div class="location" id="city">Colombo, Sri Lanka</div>
-            <div class="date">Thursday, January 22, 2026</div>
-            
-            <div class="weather-info">
-                <div class="temp-display">
-                    <div class="weather-icon">☀️</div>
-                    <div>
-                        <div class="temperature" id="temperature">72°</div>
-                        <div class="weather-desc" id="condition">Clear Sky</div>
-                    </div>
-                </div>
-            </div>
+            <div class="location" id="city">Detecting location...</div>
+            <div class="temperature" id="temperature">--°C</div>
+            <div class="weather-desc" id="condition">Please wait...</div>
         </div>
 
         <div class="stats-grid">
-            <div class="stat-card">
-                <h3>Feels Like</h3>
-                <div class="value">68°</div>
-            </div>
-            <div class="stat-card">
-                <h3>Humidity</h3>
-                <div class="value">65%</div>
-            </div>
-            <div class="stat-card">
-                <h3>Wind Speed</h3>
-                <div class="value">12 mph</div>
-            </div>
-            <div class="stat-card">
-                <h3>Pressure</h3>
-                <div class="value">1013 mb</div>
-            </div>
-            <div class="stat-card">
-                <h3>Visibility</h3>
-                <div class="value">10 km</div>
-            </div>
-            <div class="stat-card">
-                <h3>UV Index</h3>
-                <div class="value">6</div>
-            </div>
+            <div class="stat-card"><h3>Feels Like</h3><div class="value" id="feelsLike">--</div></div>
+            <div class="stat-card"><h3>Humidity</h3><div class="value" id="humidity">--</div></div>
+            <div class="stat-card"><h3>Wind</h3><div class="value" id="wind">--</div></div>
+            <div class="stat-card"><h3>Pressure</h3><div class="value" id="pressure">--</div></div>
+            <div class="stat-card"><h3>Visibility</h3><div class="value" id="visibility">--</div></div>
         </div>
 
-        <div class="forecast">
-            <h2>7-Day Forecast</h2>
-            <div class="forecast-grid">
-                <div class="forecast-card">
-                    <div class="day">Friday</div>
-                    <div class="icon">⛅</div>
-                    <div class="temps">
-                        <span class="high">74°</span>
-                        <span class="low">62°</span>
-                    </div>
-                </div>
-                <div class="forecast-card">
-                    <div class="day">Saturday</div>
-                    <div class="icon">☁️</div>
-                    <div class="temps">
-                        <span class="high">70°</span>
-                        <span class="low">60°</span>
-                    </div>
-                </div>
-                <div class="forecast-card">
-                    <div class="day">Sunday</div>
-                    <div class="icon">🌧️</div>
-                    <div class="temps">
-                        <span class="high">65°</span>
-                        <span class="low">58°</span>
-                    </div>
-                </div>
-                <div class="forecast-card">
-                    <div class="day">Monday</div>
-                    <div class="icon">⛈️</div>
-                    <div class="temps">
-                        <span class="high">63°</span>
-                        <span class="low">56°</span>
-                    </div>
-                </div>
-                <div class="forecast-card">
-                    <div class="day">Tuesday</div>
-                    <div class="icon">🌤️</div>
-                    <div class="temps">
-                        <span class="high">68°</span>
-                        <span class="low">59°</span>
-                    </div>
-                </div>
-                <div class="forecast-card">
-                    <div class="day">Wednesday</div>
-                    <div class="icon">☀️</div>
-                    <div class="temps">
-                        <span class="high">73°</span>
-                        <span class="low">61°</span>
-                    </div>
-                </div>
-                <div class="forecast-card">
-                    <div class="day">Thursday</div>
-                    <div class="icon">☀️</div>
-                    <div class="temps">
-                        <span class="high">75°</span>
-                        <span class="low">63°</span>
-                    </div>
-                </div>
-            </div>
+        <div class="forecast-section">
+            <h2 style="color:white;margin-bottom:10px;">5-Day Forecast</h2>
+            <div id="forecastGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;"></div>
         </div>
     </div>
 
-    <script src="scripts.js/app.js"></script>
     <script>
-        function searchWeather() {
-            getWeather();
+        
+        const KEY = '65906519346f9ed87f955ce9d865a762'; 
+
+        window.onload = function() {
+            updateDate();
+            getUserLocation();
+        };
+
+        function updateDate() {
+            const now = new Date();
+            document.getElementById('date').textContent = now.toLocaleDateString(undefined, { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+            });
         }
 
-        document.getElementById('cityInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                searchWeather();
+        async function searchWeather() {
+            const cityInput = document.getElementById('cityInput').value;
+            if (!cityInput) return;
+
+            showLoader();
+            try {
+                
+                const url = `https://api.openweathermap.org/data/2.5/weather?q=${cityInput}&units=metric&appid=${KEY}`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                
+                await fetchForecast({city: cityInput});
+
+                if (response.ok) {
+                    updateUI(data);
+                } else {
+                    alert("Error: " + data.message);
+                }
+            } catch (err) {
+                alert("Something went wrong!");
+            } finally {
+                hideLoader();
             }
-        });
+        }
+
+        function getUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async (position) => {
+                    const { latitude, longitude } = position.coords;
+                    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${KEY}`;
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    updateUI(data);
+                    await fetchForecast({lat: latitude, lon: longitude});
+                }, () => {
+                    document.getElementById('city').textContent = "Search manually above";
+                });
+            }
+        }
+
+        async function fetchForecast({city, lat, lon}) {
+            let url = '';
+            if (city) {
+                url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&appid=${KEY}`;
+            } else if (lat && lon) {
+                url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${KEY}`;
+            } else {
+                return;
+            }
+            const response = await fetch(url);
+            const data = await response.json();
+            if (response.ok) {
+                updateForecastUI(data);
+            } else {
+                document.getElementById('forecastGrid').innerHTML = '<div style="color:white;text-align:center;">No forecast data found.</div>';
+            }
+        }
+
+        function updateUI(data) {
+            document.getElementById('city').textContent = `${data.name}, ${data.sys.country}`;
+            document.getElementById('temperature').textContent = `${Math.round(data.main.temp)}°C`;
+            document.getElementById('condition').textContent = data.weather[0].description;
+            document.getElementById('feelsLike').textContent = `${Math.round(data.main.feels_like)}°`;
+            document.getElementById('humidity').textContent = `${data.main.humidity}%`;
+            document.getElementById('wind').textContent = `${data.wind.speed} m/s`;
+            document.getElementById('pressure').textContent = `${data.main.pressure} hPa`;
+            document.getElementById('visibility').textContent = `${(data.visibility / 1000).toFixed(1)} km`;
+        }
+
+        function updateForecastUI(data) {
+            
+            const days = {};
+            data.list.forEach(item => {
+                const date = new Date(item.dt_txt);
+                const day = date.toLocaleDateString();
+                if (!days[day]) days[day] = [];
+                days[day].push(item);
+            });
+            
+            const dayKeys = Object.keys(days).slice(0,5);
+            let html = '';
+            dayKeys.forEach(day => {
+                const items = days[day];
+                
+                let tempSum = 0, cloudSum = 0, rainSum = 0, popSum = 0;
+                let count = items.length;
+                items.forEach(i => {
+                    tempSum += i.main.temp;
+                    cloudSum += i.clouds.all;
+                    popSum += (i.pop !== undefined ? i.pop : 0);
+                    rainSum += (i.rain && i.rain['3h'] ? i.rain['3h'] : 0);
+                });
+                const avgTemp = (tempSum/count).toFixed(1);
+                const avgCloud = Math.round(cloudSum/count);
+                const avgPop = Math.round((popSum/count)*100); 
+                const avgRain = rainSum.toFixed(1);
+                
+                const icon = items[0].weather[0].icon;
+                const desc = items[0].weather[0].description;
+                html += `<div class="stat-card">
+                    <h3>${day}</h3>
+                    <img src="https://openweathermap.org/img/wn/${icon}.png" alt="icon" style="width:48px;height:48px;">
+                    <div><b>${desc}</b></div>
+                    <div>Avg Temp: ${avgTemp}°C</div>
+                    <div>Cloudiness: ${avgCloud}%</div>
+                    <div>Rain Chance: ${avgPop}%</div>
+                </div>`;
+            });
+            document.getElementById('forecastGrid').innerHTML = html;
+        }
+
+        function showLoader() {
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('mainContainer').classList.add('blur');
+        }
+
+        function hideLoader() {
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('mainContainer').classList.remove('blur');
+        }
+        
     </script>
 </body>
 </html>
